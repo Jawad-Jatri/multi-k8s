@@ -74,6 +74,7 @@ jobs:
           docker tag ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest gcr.io/${{ secrets.PROJECT_ID }}/multi-worker:latest
       - name: Push Docker Image to GCR
         run: |
+          gcloud auth configure-docker asia-southeast1-docker.pkg.dev
           docker push gcr.io/${{ secrets.PROJECT_ID }}/multi-client:latest
           docker push gcr.io/${{ secrets.PROJECT_ID }}/multi-server:latest
           docker push gcr.io/${{ secrets.PROJECT_ID }}/multi-worker:latest
