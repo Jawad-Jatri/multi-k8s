@@ -72,14 +72,14 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
       - name: Tag Docker Image for GCR
         run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-client:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-client:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-server:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-server:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-worker:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-client:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.DOCKER_USERNAME }}/multi-client:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-server:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.DOCKER_USERNAME }}/multi-server:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
       - name: Push Docker Image to GCR
         run: |
-          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-client:latest
-          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-server:latest
-          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-worker:latest
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.DOCKER_USERNAME }}/multi-client:latest
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.DOCKER_USERNAME }}/multi-server:latest
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
       - id: get-credentials
         uses: google-github-actions/get-gke-credentials@v2
         with:
