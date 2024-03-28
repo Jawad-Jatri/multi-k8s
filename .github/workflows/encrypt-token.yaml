@@ -61,7 +61,7 @@ jobs:
           platforms: linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
-          file: ./worker/
+          file: ./worker/Dockerfile
       - name: Run Kubectl apply
         run: |
           kubectl apply -f k8s
