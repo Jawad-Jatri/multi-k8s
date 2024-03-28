@@ -38,4 +38,34 @@ jobs:
       - name: Run Docker Run
         run: |
           docker run ${{ secrets.DOCKER_USERNAME }}/react-test npm test -- --coverage
+      - name: Build,push & tag client Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./client
+          platforms: linux/arm64
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }} ,${{ secrets.DOCKER_USERNAME }}/multi-client:latest
+          file: ./client/Dockerfile
+      - name: Build,push & tag server Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          platforms: linux/arm64
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/multi-server:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-server:latest
+          file: ./server/Dockerfile
+      - name: Build,push & tag worker Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./worker
+          platforms: linux/arm64
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
+          file: ./worker/
+      - name: Run Kubectl apply
+        run: |
+          kubectl apply -f k8s
+          kubectl set image deployments/server-deployment server=${{ secrets.DOCKER_USERNAME }}/multi-server:${{ github.sha }}
+          kubectl set image deployments/client-deployment client=${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }}
+          kubectl set image deployments/worker-deployment worker=${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}
 
