@@ -62,6 +62,9 @@ jobs:
 #          push: true
 #          tags: ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
 #          file: ./worker/Dockerfile
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker asia-southeast1-docker.pkg.dev
       - name: Pull Docker Image from Docker Hub
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/multi-client:latest
@@ -74,7 +77,6 @@ jobs:
           docker tag ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-worker:latest
       - name: Push Docker Image to GCR
         run: |
-          gcloud auth configure-docker asia-southeast1-docker.pkg.dev
           docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-client:latest
           docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-server:latest
           docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-worker:latest
