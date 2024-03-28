@@ -88,7 +88,7 @@ jobs:
       - name: Run Kubectl apply
         run: |
           kubectl apply -f k8s
-          kubectl set image deployments/server-deployment server=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-server:latest
-          kubectl set image deployments/client-deployment client=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-client:latest
-          kubectl set image deployments/worker-deployment worker=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-worker:latest
+          kubectl set image deployments/server-deployment server=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-server:latest
+          kubectl set image deployments/client-deployment client=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-client:latest
+          kubectl set image deployments/worker-deployment worker=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-worker:latest
 
