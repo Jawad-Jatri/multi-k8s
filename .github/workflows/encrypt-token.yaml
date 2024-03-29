@@ -111,7 +111,8 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: Configure Docker
         run: |
-          gcloud auth configure-docker asia-southeast1-docker.pkg.dev
+          gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY }}
+#          gcloud auth configure-docker asia-southeast1-docker.pkg.dev
       - name: Pull Docker Image from Docker Hub
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }}
