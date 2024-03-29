@@ -105,7 +105,7 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
           file: ./worker/Dockerfile
   deploy:
-#    needs: [worker-build,server-build,client-build]
+    needs: [worker-build,server-build,client-build]
     name: Pull images and deploy to Google cloud
     runs-on: ubuntu-latest
     steps:
