@@ -6,21 +6,12 @@ on:
       - master  # Adjust branch name as needed
 
 jobs:
-  encrypt-token:
-    name: Build and push to GCP
+  tests:
+    name: Build and test client
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.SERVICE_ACCOUNT_SECRET }}
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-      - name: Use gcloud CLI
-        run: gcloud info
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to Dockerhub
@@ -38,6 +29,23 @@ jobs:
       - name: Run Docker Run
         run: |
           docker run ${{ secrets.DOCKER_USERNAME }}/react-test npm test -- --coverage
+  client-build:
+    needs: tests
+    name: Build and push client image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "GITHUB SHA: ${{ github.sha }}"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
       - name: Build,push & tag client Docker image
         uses: docker/build-push-action@v5
         with:
@@ -46,6 +54,23 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }} ,${{ secrets.DOCKER_USERNAME }}/multi-client:latest
           file: ./client/Dockerfile
+  server-build:
+    needs: tests
+    name: Build and push server image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "GITHUB SHA: ${{ github.sha }}"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
       - name: Build,push & tag server Docker image
         uses: docker/build-push-action@v5
         with:
@@ -54,6 +79,23 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/multi-server:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-server:latest
           file: ./server/Dockerfile
+  worker-build:
+    needs: tests
+    name: Build and push worker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "GITHUB SHA: ${{ github.sha }}"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
       - name: Build,push & tag worker Docker image
         uses: docker/build-push-action@v5
         with:
@@ -62,9 +104,27 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
           file: ./worker/Dockerfile
+  deploy:
+#    needs: [worker-build,server-build,client-build]
+    name: Pull images and deploy to Google cloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "GITHUB SHA: ${{ github.sha }}"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
       - name: Configure Docker
         run: |
           gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY }}
+#          gcloud auth configure-docker asia-southeast1-docker.pkg.dev
       - name: Pull Docker Image from Docker Hub
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }}
