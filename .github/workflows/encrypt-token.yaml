@@ -72,10 +72,10 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/multi-server:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-server:latest
-          file: ./server/DockerfileDockerfile
+          file: ./server/Dockerfile
   worker-build:
     needs: tests
-    name: Build and push server image to Docker Hub
+    name: Build and push worker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
