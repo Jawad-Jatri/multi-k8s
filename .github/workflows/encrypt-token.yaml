@@ -28,58 +28,58 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-#      - name: Build,push & tag client Docker image
-#        uses: docker/build-push-action@v5
-#        with:
-#          context: ./client
-#          load: true
-#          tags: ${{ secrets.DOCKER_USERNAME }}/react-test
-#          file: ./client/Dockerfile.dev
-#      - name: Run Docker Run
-#        run: |
-#          docker run ${{ secrets.DOCKER_USERNAME }}/react-test npm test -- --coverage
-#      - name: Build,push & tag client Docker image
-#        uses: docker/build-push-action@v5
-#        with:
-#          context: ./client
-#          platforms: linux/amd64
-#          push: true
-#          tags: ${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }} ,${{ secrets.DOCKER_USERNAME }}/multi-client:latest
-#          file: ./client/Dockerfile
-#      - name: Build,push & tag server Docker image
-#        uses: docker/build-push-action@v5
-#        with:
-#          context: ./server
-#          platforms: linux/amd64
-#          push: true
-#          tags: ${{ secrets.DOCKER_USERNAME }}/multi-server:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-server:latest
-#          file: ./server/Dockerfile
-#      - name: Build,push & tag worker Docker image
-#        uses: docker/build-push-action@v5
-#        with:
-#          context: ./worker
-#          platforms: linux/amd64
-#          push: true
-#          tags: ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
-#          file: ./worker/Dockerfile
+      - name: Build,push & tag client Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./client
+          load: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/react-test
+          file: ./client/Dockerfile.dev
+      - name: Run Docker Run
+        run: |
+          docker run ${{ secrets.DOCKER_USERNAME }}/react-test npm test -- --coverage
+      - name: Build,push & tag client Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./client
+          platforms: linux/amd64
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }} ,${{ secrets.DOCKER_USERNAME }}/multi-client:latest
+          file: ./client/Dockerfile
+      - name: Build,push & tag server Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          platforms: linux/amd64
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/multi-server:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-server:latest
+          file: ./server/Dockerfile
+      - name: Build,push & tag worker Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./worker
+          platforms: linux/amd64
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}, ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
+          file: ./worker/Dockerfile
       - name: Configure Docker
         run: |
           gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY }}
       - name: Pull Docker Image from Docker Hub
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/multi-client:latest
-          docker pull ${{ secrets.DOCKER_USERNAME }}/multi-server:latest
-          docker pull ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
+          docker pull ${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/multi-server:${{ github.sha }}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }}
       - name: Tag Docker Image for GCR
         run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-client:latest ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-server:latest ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-client:${{ github.sha }} ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:${{ github.sha }}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-server:${{ github.sha }} ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:${{ github.sha }}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-worker:${{ github.sha }} ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:${{ github.sha }}
       - name: Push Docker Image to GCR
         run: |
-          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:latest
-          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:latest
-          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:latest
+          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:${{ github.sha }}
+          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:${{ github.sha }}
+          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:${{ github.sha }}
       - id: get-credentials
         uses: google-github-actions/get-gke-credentials@v2
         with:
@@ -88,7 +88,7 @@ jobs:
       - name: Run Kubectl apply
         run: |
           kubectl apply -f k8s
-          kubectl set image deployments/client-deployment client=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:latest
-          kubectl set image deployments/server-deployment server=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:latest
-          kubectl set image deployments/worker-deployment worker=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:latest
+          kubectl set image deployments/client-deployment client=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:${{ github.sha }}
+          kubectl set image deployments/server-deployment server=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:${{ github.sha }}
+          kubectl set image deployments/worker-deployment worker=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:${{ github.sha }}
 
