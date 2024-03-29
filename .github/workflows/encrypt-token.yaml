@@ -111,7 +111,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: Configure Docker
         run: |
-          gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY }}
+          gcloud auth configure-docker asia-southeast1-docker.pkg.dev
 #          gcloud auth configure-docker asia-southeast1-docker.pkg.dev
       - name: Pull Docker Image from Docker Hub
         run: |
@@ -120,14 +120,14 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest
       - name: Tag Docker Image for GCR
         run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-client:latest ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-server:latest ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-client:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-client:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-server:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-server:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/multi-worker:latest asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-worker:latest
       - name: Push Docker Image to GCR
         run: |
-          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:latest
-          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:latest
-          docker push ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:latest
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-client:latest
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-server:latest
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-worker:latest
       - id: get-credentials
         uses: google-github-actions/get-gke-credentials@v2
         with:
@@ -136,7 +136,7 @@ jobs:
       - name: Run Kubectl apply
         run: |
           kubectl apply -f k8s
-          kubectl set image deployments/server-deployment server=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:latest
-          kubectl set image deployments/client-deployment client=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:latest
-          kubectl set image deployments/worker-deployment worker=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:latest
+          kubectl set image deployments/client-deployment client=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-client:latest
+          kubectl set image deployments/server-deployment server=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-server:latest
+          kubectl set image deployments/worker-deployment worker=asia-southeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/multi-k8s/multi-worker:latest
 
