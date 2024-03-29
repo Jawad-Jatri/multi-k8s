@@ -144,7 +144,6 @@ jobs:
       - name: Run Kubectl apply
         run: |
           kubectl apply -f k8s
-          kubectl set image deployments/client-deployment client=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:${{ github.sha }}
-          kubectl set image deployments/server-deployment server=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:${{ github.sha }}
-          kubectl set image deployments/worker-deployment worker=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:${{ github.sha }}
-
+#          kubectl set image deployments/client-deployment client=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-client:${{ github.sha }}
+#          kubectl set image deployments/server-deployment server=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-server:${{ github.sha }}
+#          kubectl set image deployments/worker-deployment worker=${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_NAME }}/multi-worker:${{ github.sha }}
